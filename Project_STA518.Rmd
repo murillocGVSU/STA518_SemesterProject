@@ -1,0 +1,17 @@
+---
+title: "Project_STA518"
+author: "Cleyde Murillo, Jr."
+date: "10/13/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readr)
+```
+
+
+```{r message = FALSE}
+customers <- read_table2("marketing_campaign.csv")
+summary(customers)
+```
