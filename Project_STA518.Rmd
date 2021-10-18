@@ -5,13 +5,26 @@ date: "10/13/2021"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
+> Loading in libraries
+
+```{r setup}
 library(tidyverse)
+library(data.table)
 library(readr)
 ```
 
+> Loading in Customer data
 
 ```{r message = FALSE}
 customers <- read_table2("marketing_campaign.csv")
 summary(customers)
 ```
+
+```{r}
+df2n <- customers %>% 
+      subset(!(Education %in% c('Basic', 'Graduation', 'Master', 'PhD')) | is.na(Response))
+
+customers %>% 
+  filter()
+```
+
