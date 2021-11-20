@@ -7,15 +7,14 @@ output:
     df_print: paged
 ---
 
-Loading in libraries
+Setup
 
 ```{r setup, message = FALSE}
 library(tidyverse)
 library(data.table)
 library(readr)
+library(corrr)
 options(scipen = 999)
-# Loading in Customer data
-# This will read in 224 observations with errors starting within Education
 ```
 
 > Loading in Customer data
@@ -119,5 +118,14 @@ gridExtra::grid.arrange(p1,p2)
 ```{r scatterplots}
 ggplot(customers, aes(y=NumStorePurchases, x=Income, color=Marital_Status)) +
   geom_point()
+```
+
+
+```{r correlation}
+customers %>% 
+  select(-ID, -Year_Birth, -Marital_Status, -Dt_Customer, -Education) %>% 
+  correlate()
+
+#network_plot()
 ```
 
