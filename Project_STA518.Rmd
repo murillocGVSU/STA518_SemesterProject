@@ -2,29 +2,117 @@
 title: "Project_STA518"
 author: "Cleyde Murillo, Jr."
 date: "10/13/2021"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
-> Loading in libraries
+Loading in libraries
 
-```{r setup}
+```{r setup, message = FALSE}
 library(tidyverse)
 library(data.table)
 library(readr)
-```
+options(scipen = 999)
+# Loading in Customer data
+# This will read in 224 observations with errors starting within Education
 
-> Loading in Customer data
-
-```{r message = FALSE}
-customers <- read_table2("marketing_campaign.csv")
+customers <- read_tsv("marketing_campaign.csv")
 summary(customers)
 ```
 
-```{r}
-df2n <- customers %>% 
-      subset(!(Education %in% c('Basic', 'Graduation', 'Master', 'PhD')) | is.na(Response))
+Variable Dictionary:
 
-customers %>% 
-  filter()
+`ID` = Customer's Unique Identifier
+`Year_Birth` = Customer's birth year
+`Education` = Customer's education level
+`Marital_Status` = Customer's marital status
+`Income` = Customer's yearly household income
+`Kidhome` = Number of children in customer's household
+`Teenhome:` = Number of teenagers in customer's household
+`Dt_Customer` = Date of customer's enrollment with the company
+`Recency` = Number of days since customer's last purchase
+`Complain` = 1 if customer complained in the last 2 years, 0 otherwise
+
+`MntWines` = Amount spent on wine in last 2 years
+`MntFruits` = Amount spent on fruits in last 2 years
+`MntMeatProducts` = Amount spent on meat in last 2 years
+`MntFishProducts` = Amount spent on fish in last 2 years
+`MntSweetProducts` = Amount spent on sweets in last 2 years
+`MntGoldProds` = Amount spent on gold in last 2 years
+
+`NumDealsPurchases` = Number of purchases made with a discount
+`AcceptedCmp1` = 1 if customer accepted the offer in the 1st campaign, 0 otherwise
+`AcceptedCmp2` = 1 if customer accepted the offer in the 2nd campaign, 0 otherwise
+`AcceptedCmp3` = 1 if customer accepted the offer in the 3rd campaign, 0 otherwise
+`AcceptedCmp4` = 1 if customer accepted the offer in the 4th campaign, 0 otherwise
+`AcceptedCmp5` = 1 if customer accepted the offer in the 5th campaign, 0 otherwise
+`Response` = 1 if customer accepted the offer in the last campaign, 0 otherwise
+
+`NumWebPurchases` = Number of purchases made through the company’s web site
+`NumCatalogPurchases` = Number of purchases made using a catalogue
+`NumStorePurchases` = Number of purchases made directly in stores
+`NumWebVisitsMonth` = Number of visits to company’s web site in the last month
+
+
+Exploratory Data Analysis
+
+```{r}
+outliers <- customers %>% 
+        filter(Income > 200000 | is.na(Income))
+customers <- customers %>% 
+  anti_join(outliers)
+
+```
+
+
+We will be generating visualizations (density plots, histograms, scatter plots) to understand how the data behaves
+
+```{r Density_Plots}
+ggplot(data=customers, aes(x=Income, group=Marital_Status, fill=Marital_Status)) +
+    geom_density(adjust=1.5) +
+    theme_classic() +
+    facet_wrap(~Marital_Status) +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      axis.ticks.x=element_blank()
+    )
+
+ggplot(data=customers, aes(x=Income, group=Education, fill=Education)) +
+    geom_density(adjust=1.5) +
+    theme_classic() +
+    facet_wrap(~Education) +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      axis.ticks.x=element_blank()
+    )
+```
+
+```{r histogram}
+p1 <- ggplot(data=customers, aes(customers$Year_Birth)) + 
+  geom_histogram(aes(y =..density..), 
+                 col="red", 
+                 fill="blue", 
+                 alpha = .2) + 
+  geom_density(col=2) + 
+  labs(title="Histogram for Year of Birth") +
+  labs(x="Year", y="Count")
+p2 <- ggplot(data=customers, aes(customers$Income)) + 
+  geom_histogram(aes(y =..density..), 
+                 col="red", 
+                 fill="blue", 
+                 alpha = .2) + 
+  geom_density(col=2) + 
+  labs(title="Histogram for Income") +
+  labs(x="Income", y="Count")
+
+gridExtra::grid.arrange(p1,p2)
+```
+
+```{r scatterplots}
+ggplot(customers, aes(y=NumStorePurchases, x=Income, color=Marital_Status)) +
+  geom_point()
 ```
 
