@@ -122,10 +122,10 @@ ggplot(customers, aes(y=NumStorePurchases, x=Income, color=Marital_Status)) +
 
 
 ```{r correlation}
-customers %>% 
+customer_cor <-customers %>% 
   select(-ID, -Year_Birth, -Marital_Status, -Dt_Customer, -Education) %>% 
   correlate()
+rplot(customer_cor)
 
-#network_plot()
 ```
 
