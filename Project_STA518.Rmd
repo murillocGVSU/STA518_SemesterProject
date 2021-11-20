@@ -11,14 +11,22 @@ output: pdf_document
 library(tidyverse)
 library(data.table)
 library(readr)
+devtools::install_github("rstudio/addinexamples", type = "source")
 ```
 
 > Loading in Customer data
 
 ```{r message = FALSE}
-customers <- read_table2("marketing_campaign.csv")
+customers <- read_tsv("marketing_campaign.csv")
 summary(customers)
 ```
+
+
+```{r}
+temp = gsub("2n_Cycle","2n Cycle", readLines("marketing_campaign.csv")) %>% 
+
+```
+
 
 ```{r}
 df2n <- customers %>% 
