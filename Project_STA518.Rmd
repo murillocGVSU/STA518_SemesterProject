@@ -14,6 +14,7 @@ library(tidyverse)
 library(data.table)
 library(readr)
 library(corrr)
+library(infer)
 options(scipen = 999)
 ```
 
@@ -128,6 +129,31 @@ customer_cor <-customers %>%
   shave()
   
 rplot(customer_cor)
+
+```
+
+
+
+
+```{r Bootstrapping}
+
+boot_customers <- customers %>%
+  rep_sample_n(size = nrow(customers),
+               replace = TRUE,
+               reps = 1000)
+
+
+```
+
+```{r Bootstrapping mean}
+
+boot_customers_mean <- boot_customers %>% 
+  group_by(replicate) %>% 
+  summarise(mean_customer = mean(customers))
+
+
+
+
 
 ```
 
