@@ -62,12 +62,19 @@ Variable Dictionary:
 Exploratory Data Analysis
 ===========================================
 
-```{r outliers}
+```{r data cleaning}
+#Removing outliers to separate df. Very high income, NAs, irrelevant statuses and unlikely ages: total 35 observations removed
 outliers <- customers %>% 
-        filter(Income > 200000 | is.na(Income))
-customers <- customers %>% 
-  anti_join(outliers)
+        filter(Income > 200000 | is.na(Income) | Marital_Status %in% c('Absurd', 'Alone', 'YOLO') | Year_Birth < 1905)
 
+#Removing Z_CostContact & Z_Revenue for redundancy / no value & anti-joining outliers df
+customers <- customers %>% 
+  anti_join(outliers) %>% 
+  subset(select = -c(Z_CostContact, Z_Revenue))
+#Creating age variable and moving to after birth year
+customers <- customers %>% 
+  mutate(Age = as.numeric(format(Sys.Date(), '%Y')) - Year_Birth) %>% 
+  relocate(Age, .after = Year_Birth)
 ```
 
 
@@ -96,21 +103,21 @@ ggplot(data=customers, aes(x=Income, group=Education, fill=Education)) +
 ```
 
 ```{r histogram}
-p1 <- ggplot(data=customers, aes(customers$Year_Birth)) + 
+p1 <- ggplot(data=customers, aes(customers$Age)) + 
   geom_histogram(aes(y =..density..), 
                  col="red", 
                  fill="blue", 
                  alpha = .2) + 
   geom_density(col=2) + 
-  labs(title="Histogram for Year of Birth") +
-  labs(x="Year", y="Count")
+  labs(title="Client Age") +
+  labs(x="Age", y="Count")
 p2 <- ggplot(data=customers, aes(customers$Income)) + 
   geom_histogram(aes(y =..density..), 
                  col="red", 
                  fill="blue", 
                  alpha = .2) + 
   geom_density(col=2) + 
-  labs(title="Histogram for Income") +
+  labs(title="Client Income") +
   labs(x="Income", y="Count")
 
 gridExtra::grid.arrange(p1,p2)
@@ -120,7 +127,6 @@ gridExtra::grid.arrange(p1,p2)
 ggplot(customers, aes(y=NumStorePurchases, x=Income, color=Marital_Status)) +
   geom_point()
 ```
-
 
 ```{r correlation}
 customer_cor <-customers %>% 
@@ -132,28 +138,19 @@ rplot(customer_cor)
 
 ```
 
-
-
-
 ```{r Bootstrapping}
-
 boot_customers <- customers %>%
   rep_sample_n(size = nrow(customers),
                replace = TRUE,
                reps = 10)
 
-
 ```
 
 ```{r Bootstrapping mean}
 
-#boot_customers_mean <- boot_customers %>% 
-  #group_by(Income) %>% 
-  #summarise(mean_customer = mean(customers))
-summary(boot_customers)
-
-
-
+boot_customers_mean <- boot_customers %>%
+                        group_by(ID) %>% 
+                        summarise(MeanIncome = mean(Income))
 
 ```
 
