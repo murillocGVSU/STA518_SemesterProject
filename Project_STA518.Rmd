@@ -134,7 +134,10 @@ customer_cor <-customers %>%
   correlate()%>%
   shave()
   
-rplot(customer_cor)
+rplot(customer_cor,
+  shape = 20,
+  colours = c("red", "black", "blue")
+)
 
 ```
 
