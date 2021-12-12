@@ -251,10 +251,33 @@ summary(customers)</code></pre>
 ##  Max.   :1.0000  
 ## </code></pre>
 <p>Variable Dictionary:</p>
-<p><code>ID</code> = Customer’s Unique Identifier <code>Year_Birth</code> = Customer’s birth year <code>Education</code> = Customer’s education level <code>Marital_Status</code> = Customer’s marital status <code>Income</code> = Customer’s yearly household income <code>Kidhome</code> = Number of children in customer’s household <code>Teenhome:</code> = Number of teenagers in customer’s household <code>Dt_Customer</code> = Date of customer’s enrollment with the company <code>Recency</code> = Number of days since customer’s last purchase <code>Complain</code> = 1 if customer complained in the last 2 years, 0 otherwise</p>
-<p><code>MntWines</code> = Amount spent on wine in last 2 years <code>MntFruits</code> = Amount spent on fruits in last 2 years <code>MntMeatProducts</code> = Amount spent on meat in last 2 years <code>MntFishProducts</code> = Amount spent on fish in last 2 years <code>MntSweetProducts</code> = Amount spent on sweets in last 2 years <code>MntGoldProds</code> = Amount spent on gold in last 2 years</p>
-<p><code>NumDealsPurchases</code> = Number of purchases made with a discount <code>AcceptedCmp1</code> = 1 if customer accepted the offer in the 1st campaign, 0 otherwise <code>AcceptedCmp2</code> = 1 if customer accepted the offer in the 2nd campaign, 0 otherwise <code>AcceptedCmp3</code> = 1 if customer accepted the offer in the 3rd campaign, 0 otherwise <code>AcceptedCmp4</code> = 1 if customer accepted the offer in the 4th campaign, 0 otherwise <code>AcceptedCmp5</code> = 1 if customer accepted the offer in the 5th campaign, 0 otherwise <code>Response</code> = 1 if customer accepted the offer in the last campaign, 0 otherwise</p>
-<p><code>NumWebPurchases</code> = Number of purchases made through the company’s web site <code>NumCatalogPurchases</code> = Number of purchases made using a catalogue <code>NumStorePurchases</code> = Number of purchases made directly in stores <code>NumWebVisitsMonth</code> = Number of visits to company’s web site in the last month</p>
+<p><code>ID</code> = Customer’s Unique Identifier</p>
+<p><code>Year_Birth</code> = Customer’s birth year</p>
+<p><code>Education</code> = Customer’s education level</p>
+<p><code>Marital_Status</code> = Customer’s marital status</p>
+<p><code>Income</code> = Customer’s yearly household income</p>
+<p><code>Kidhome</code> = Number of children in customer’s household</p>
+<p><code>Teenhome:</code> = Number of teenagers in customer’s household</p>
+<p><code>Dt_Customer</code> = Date of customer’s enrollment with the company</p>
+<p><code>Recency</code> = Number of days since customer’s last purchase</p>
+<p><code>Complain</code> = 1 if customer complained in the last 2 years, 0 otherwise</p>
+<p><code>MntWines</code> = Amount spent on wine in last 2 years</p>
+<p><code>MntFruits</code> = Amount spent on fruits in last 2 years</p>
+<p><code>MntMeatProducts</code> = Amount spent on meat in last 2 years</p>
+<p><code>MntFishProducts</code> = Amount spent on fish in last 2 years</p>
+<p><code>MntSweetProducts</code> = Amount spent on sweets in last 2 years</p>
+<p><code>MntGoldProds</code> = Amount spent on gold in last 2 years</p>
+<p><code>NumDealsPurchases</code> = Number of purchases made with a discount</p>
+<p><code>AcceptedCmp1</code> = 1 if customer accepted the offer in the 1st campaign, 0 otherwise</p>
+<p><code>AcceptedCmp2</code> = 1 if customer accepted the offer in the 2nd campaign, 0 otherwise</p>
+<p><code>AcceptedCmp3</code> = 1 if customer accepted the offer in the 3rd campaign, 0 otherwise</p>
+<p><code>AcceptedCmp4</code> = 1 if customer accepted the offer in the 4th campaign, 0 otherwise</p>
+<p><code>AcceptedCmp5</code> = 1 if customer accepted the offer in the 5th campaign, 0 otherwise</p>
+<p><code>Response</code> = 1 if customer accepted the offer in the last campaign, 0 otherwise</p>
+<p><code>NumWebPurchases</code> = Number of purchases made through the company’s web site</p>
+<p><code>NumCatalogPurchases</code> = Number of purchases made using a catalogue</p>
+<p><code>NumStorePurchases</code> = Number of purchases made directly in stores</p>
+<p><code>NumWebVisitsMonth</code> = Number of visits to company’s web site in the last month</p>
 <div id="exploratory-data-analysis" class="section level1">
 <h1>Exploratory Data Analysis</h1>
 <pre class="r"><code>#Removing outliers to separate df. Very high income, NAs, irrelevant statuses and unlikely ages: total 35 observations removed
