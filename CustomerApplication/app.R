@@ -2,64 +2,56 @@
 output: html_document
 runtime: shiny
 ---
-library(shiny)
-library(ggplot2)
-library(data.table)
-library(DT)
-library(shinyWidgets)
 library(tidyverse)
-customers <- read_tsv("Data/marketing_campaign.csv"  )
+library(shiny)
+library(ggvis)
+library(feather)
 
-#Removing outliers to separate df. Very high income, NAs, irrelevant statuses and unlikely ages: total 35 observations removed
-outliers <- customers %>% 
-    filter(Income > 200000 | is.na(Income) | Marital_Status %in% c('Absurd', 'Alone', 'YOLO') | Year_Birth < 1905)
+customers <- read_feather("customers.feather")
 
-#Removing Z_CostContact & Z_Revenue for redundancy / no value & anti-joining outliers df
-customers <- customers %>% 
-    anti_join(outliers) %>% 
-    subset(select = -c(Z_CostContact, Z_Revenue))
-#Creating age variable and moving to after birth year
-customers <- customers %>% 
-    mutate(Age = as.numeric(format(Sys.Date(), '%Y')) - Year_Birth) %>% 
-    relocate(Age, .after = Year_Birth)
-
-
-
-# Define UI for application that draws a histogram
+# Define UI for application explores marketing data
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Customer Marketing Data"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
+    titlePanel("Customer Marketing Explorer"),
+    fluidRow(
+        column(3,
+               wellPanel(
+                   h4("Filter"),
+                   sliderInput("age", "Client's Recorded Age",
+                               0, 100, 30, step = 1),
+                   sliderInput("income", "Client's Annual Income",
+                               0, 200000, 40000, step = 5000),
+                   dateRangeInput('dateRange',
+                                  label = 'Date Range Input: yyyy-mm-dd',
+                                  start = '2012-07-30', end = '2014-06-29'),
+                   sliderInput("kidhome", "Children In-Residence",
+                               0, 2, 0, step = 1),
+                   sliderInput("teenhome", "Teen In-Residence",
+                               0, 2, 0, step = 1),
+                   selectInput("marriagestat", "Marital Status",
+                               c("Single", "Together", "Married", "Divorced", "Widowed")),
+                   selectInput("education", "Client's Level of Education",
+                               c("All", "2n Cycle", "Graduation", "Basic", "Master", "PhD"))
+               ),
+               wellPanel(
+                   selectInput("xvar", "X-axis variable", axis_vars, selected = "Income"),
+                   selectInput("yvar", "Y-axis variable", axis_vars, selected = "Age")
+               ),
+               column(9,
+                      ggvisOutput("plot1"),
+                      wellPanel(
+                          span("Number of Clients selected:",
+                          textOutput("n_clients"))
+               )
+               )
         )
     )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- customers[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    })
+    
 }
-
 # Run the application 
 shinyApp(ui = ui, server = server)

@@ -12,6 +12,8 @@ Setup
 ```{r setup, message = FALSE}
 library(tidyverse)
 library(data.table)
+library(lubridate)
+library(feather)
 library(readr)
 library(corrr)
 library(infer)
@@ -98,6 +100,8 @@ customers <- customers %>%
 customers <- customers %>% 
   mutate(Age = as.numeric(format(Sys.Date(), '%Y')) - Year_Birth) %>% 
   relocate(Age, .after = Year_Birth)
+#Converting Dt_Customer to date
+customers$Dt_Customer <- as.Date(parse_date_time(customers$Dt_Customer, c('dmy', 'ymd_HMS')))
 ```
 
 
@@ -177,6 +181,11 @@ boot_customers <- customers %>%
 boot_customers_mean <- boot_customers %>%
                         group_by(ID) %>% 
                         summarise(MeanIncome = mean(Income))
+
+```
+
+```{r Export Data}
+write_feather(customers, "customers.feather")
 
 ```
 
