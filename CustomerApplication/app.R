@@ -1,57 +1,56 @@
----
-output: html_document
-runtime: shiny
----
 library(tidyverse)
 library(shiny)
 library(ggvis)
 library(feather)
 
 customers <- read_feather("customers.feather")
-
+axis_vars <- names(customers %>% dplyr::select(where(is.numeric)))
 # Define UI for application explores marketing data
 ui <- fluidPage(
 
     # Application title
     titlePanel("Customer Marketing Explorer"),
-    fluidRow(
-        column(3,
-               wellPanel(
-                   h4("Filter"),
-                   sliderInput("age", "Client's Recorded Age",
-                               0, 100, 30, step = 1),
-                   sliderInput("income", "Client's Annual Income",
-                               0, 200000, 40000, step = 5000),
-                   dateRangeInput('dateRange',
-                                  label = 'Date Range Input: yyyy-mm-dd',
-                                  start = '2012-07-30', end = '2014-06-29'),
-                   sliderInput("kidhome", "Children In-Residence",
-                               0, 2, 0, step = 1),
-                   sliderInput("teenhome", "Teen In-Residence",
-                               0, 2, 0, step = 1),
-                   selectInput("marriagestat", "Marital Status",
-                               c("Single", "Together", "Married", "Divorced", "Widowed")),
-                   selectInput("education", "Client's Level of Education",
-                               c("All", "2n Cycle", "Graduation", "Basic", "Master", "PhD"))
-               ),
-               wellPanel(
-                   selectInput("xvar", "X-axis variable", axis_vars, selected = "Income"),
-                   selectInput("yvar", "Y-axis variable", axis_vars, selected = "Age")
-               ),
-               column(9,
-                      ggvisOutput("plot1"),
-                      wellPanel(
-                          span("Number of Clients selected:",
-                          textOutput("n_clients"))
-               )
-               )
-        )
-    )
-)
-
-# Define server logic required to draw a histogram
-server <- function(input, output) {
     
+    fluidRow(
+        column(4,
+               selectInput('educ', 'Education', c('All',unique(as.character(customers$Education))))),
+        column(4,
+               selectInput('marstat', 'Marital Status', c('All', unique(as.character(customers$Marital_Status))))),
+        column(4,
+               selectInput('response', 'Response', c('All', unique(as.character(customers$Response)))))
+    ),
+        sidebarPanel(
+            dateRangeInput('dateRange',
+                           label = 'Date Client enrolled with company: ',
+                           start = min(customers$Dt_Customer), end = max(customers$Dt_Customer),
+                           min = min(customers$Dt_Customer, max = max(customers$Dt_Customer))),
+            sliderInput('income',
+                        label = 'Client Income (US Dollars): ',
+                        min = min(customers$Income), max = max(customers$Income), value = c(min(customers$Income),max(customers$Income)))
+        ),
+    DT::dataTableOutput('table'),
+        column(9,
+               ggvisOutput('plot1'),
+               wellPanel(
+                   selectInput("xvar", "X-axis variable", names(customers %>% dplyr::select(where(is.numeric))), selected = "Income"),
+                   selectInput("yvar", "Y-axis variable", names(customers %>% dplyr::select(where(is.numeric))), selected = "Recency")))
+)
+server <- function(input, output) {
+    output$table <- DT::renderDataTable(DT::datatable({
+        data <- customers
+        if (input$educ != 'All') {
+            data <- data[data$Education == input$educ,]
+        }
+        if (input$marstat != 'All') {
+            data <- data[data$Marital_Status == input$marstat,]
+        }
+        if (input$response != 'All') {
+            data <- data[data$Response == input$response,]
+        }
+    data = subset(data, data$Dt_Customer >= input$dateRange[1] & data$Dt_Customer <= input$dateRange[2])
+    data = subset(data, data$Income >= input$income[1] & data$Dt_Customer <= input$income[2])
+    data
+    }))
 }
 # Run the application 
 shinyApp(ui = ui, server = server)
