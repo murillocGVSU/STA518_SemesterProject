@@ -29,11 +29,12 @@ ui <- fluidPage(
                         min = min(customers$Income), max = max(customers$Income), value = c(min(customers$Income),max(customers$Income)))
         ),
     DT::dataTableOutput('table'),
-        column(9,
-               ggvisOutput('plot1'),
-               wellPanel(
-                   selectInput("xvar", "X-axis variable", names(customers %>% dplyr::select(where(is.numeric))), selected = "Income"),
-                   selectInput("yvar", "Y-axis variable", names(customers %>% dplyr::select(where(is.numeric))), selected = "Recency")))
+        # column(9,
+        #        wellPanel(
+        #            selectInput("xvar", "X-axis variable", names(customers %>% dplyr::select(where(is.numeric))), selected = "Income"),
+        #            selectInput("yvar", "Y-axis variable", names(customers %>% dplyr::select(where(is.numeric))), selected = "Recency"))),
+        column(10,
+               plotOutput('plot1', height = 'auto'))
 )
 server <- function(input, output) {
     output$table <- DT::renderDataTable(DT::datatable({
@@ -51,6 +52,10 @@ server <- function(input, output) {
     data = subset(data, data$Income >= input$income[1] & data$Dt_Customer <= input$income[2])
     data
     }))
+    
+    selectedData <- reactive({
+        customers[, c(input$xvar, input$yvar)]
+    })
 }
 # Run the application 
 shinyApp(ui = ui, server = server)

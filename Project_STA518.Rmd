@@ -187,4 +187,3 @@ boot_customers_mean <- boot_customers %>%
 ```{r Export Data}
 write_feather(customers, "customers.feather")
 ```
-
